@@ -2,7 +2,10 @@ import json
 
 import pytest
 
-from server import app
+try:
+    from .server import app
+except ImportError:
+    from server import app
 
 def get(uri):
     app.config['TESTING'] = True
