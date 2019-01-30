@@ -26,3 +26,14 @@ def test_factorial(client):
     data = json.loads(r.data)
 
     assert data['output'] == 'Error: integer needs to be positive'
+
+def test_fib(client):
+    r = client.get('/fibonacci/20')
+    data = json.loads(r.data)
+
+    assert data['output'] == [0, 1, 1, 2, 3, 5, 8, 13]
+
+    r = client.get('/fibonacci/-4')
+    data = json.loads(r.data)
+
+    assert data['output'] == 'Error: integer needs to be positive'
