@@ -2,7 +2,7 @@ import hashlib
 import json
 import requests
 
-from flask import Flask
+from flask import Flask, Response
 
 app = Flask(__name__)
 
@@ -22,9 +22,12 @@ def fibonacci(num):
 
 def is_prime(num):
     prime = True
-    for i in range(2, num):
-        if num % i == 0:
-            prime = False
+    if num <= 1:
+        prime = False
+    else:
+        for i in range(2, num):
+            if num % i == 0:
+                prime = False
     return prime
 
 def send(message):
@@ -40,18 +43,23 @@ def send(message):
 
     return True if response.status_code == 200 else False
 
-# Routes
+def response(input, output, code):
+    data = {
+        'input': input,
+        'output': output
+    }
+    return Response(json.dumps(data), status=code, mimetype='application/json')
 
+
+# Routes
 @app.route('/')
 def index():
     return 'It works!'
 
 @app.route('/md5/<string>')
 def md5(string):
-    return json.dumps({
-        'input': string,
-        'output': hashlib.md5(bytes(string, 'utf-8')).hexdigest()
-    })
+    output = hashlib.md5(bytes(string, 'utf-8')).hexdigest()
+    return response(string, output, 200)
 
 @app.route('/factorial/<number>')
 def fact(number):
@@ -59,17 +67,13 @@ def fact(number):
         num = int(number)
         if num < 0:
             output = 'Error: integer needs to be positive'
+            return response(number, output, 400)
         else:
             output = factorial(num)
+            return response(number, output, 200)
     except ValueError:
         output = "Error: that's not a number"
-
-
-    return json.dumps({
-        'input': number,
-        'output': output
-    })
-
+        return response(number, output, 400)
 
 @app.route('/fibonacci/<number>')
 def fib(number):
@@ -77,16 +81,13 @@ def fib(number):
         num = int(number)
         if num < 0:
             output = 'Error: integer needs to be positive'
+            return response(number, output, 400)
         else:
             output = fibonacci(num)
+            return response(number, output, 200)
     except ValueError:
         output = "Error: that's not a number"
-
-
-    return json.dumps({
-        'input': number,
-        'output': output
-    })
+        return response(number, output, 400)
 
 @app.route('/is-prime/<number>')
 def prime(number):
@@ -94,23 +95,20 @@ def prime(number):
         num = int(number)
         if num < 0:
             output = 'Error: integer needs to be positive'
+            return response(number, output, 400)
         else:
             output = is_prime(num)
+            return response(number, output, 200)
     except ValueError:
         output = "Error: that's not a number"
-
-    return json.dumps({
-        'input': number,
-        'output': output
-    })
+        return response(number, output, 400)
 
 @app.route('/slack-alert/<string>')
 def slack_alert(string):
     output = send(string)
+    return response(string, output, 200)
 
-    return json.dumps({
-        'input': string,
-        'output': output
-    })
 
-app.run('0.0.0.0', port=5000)
+if __name__ == '__main__':
+    app.debug = True
+    app.run('0.0.0.0', port=5000)
