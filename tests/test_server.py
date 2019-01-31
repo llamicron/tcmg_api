@@ -3,9 +3,9 @@ import json
 import pytest
 
 try:
-    from .server import app
+    from .api.server import app
 except ImportError:
-    from server import app
+    from api.server import app
 
 def get(uri):
     """
@@ -26,20 +26,20 @@ def test_factorial():
     assert data['output'] == 5040
 
     data = get('/factorial/-4')
-    assert data['output'] == 'Error: integer needs to be positive'
+    assert data['output'] == 'Error: not a valid number'
 
     data = get('/factorial/some string lmao')
-    assert data['output'] == "Error: that's not a number"
+    assert data['output'] == 'Error: not a valid number'
 
 def test_fib():
     data = get('/fibonacci/20')
     assert data['output'] == [0, 1, 1, 2, 3, 5, 8, 13]
 
     data = get('/fibonacci/-4')
-    assert data['output'] == 'Error: integer needs to be positive'
+    assert data['output'] == 'Error: not a valid number'
 
     data = get('/fibonacci/a string here')
-    assert data['output'] == "Error: that's not a number"
+    assert data['output'] == 'Error: not a valid number'
 
 
 def test_is_prime():
@@ -47,10 +47,10 @@ def test_is_prime():
     assert data['output'] == True
 
     data = get('/is-prime/-4')
-    assert data['output'] == 'Error: integer needs to be positive'
+    assert data['output'] == 'Error: not a valid number'
 
     data = get('/is-prime/a string')
-    assert data['output'] == "Error: that's not a number"
+    assert data['output'] == 'Error: not a valid number'
 
 def test_slack_message():
     data = get('/slack-alert/testing!')
