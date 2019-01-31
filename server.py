@@ -42,6 +42,10 @@ def send(message):
 
 # Routes
 
+@app.route('/')
+def index():
+    return 'It works!'
+
 @app.route('/md5/<string>')
 def md5(string):
     return json.dumps({
@@ -108,3 +112,5 @@ def slack_alert(string):
         'input': string,
         'output': output
     })
+
+app.run('0.0.0.0', port=5000)
