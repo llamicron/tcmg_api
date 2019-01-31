@@ -6,6 +6,7 @@ from flask import Flask, Response
 
 app = Flask(__name__)
 
+# Helper functions
 def factorial(num):
     output = 1
     for i in range(1, num + 1):
@@ -50,6 +51,13 @@ def response(input, output, code):
     }
     return Response(json.dumps(data), status=code, mimetype='application/json')
 
+def valid_number(string):
+    try:
+        int(string)
+        return True
+    except ValueError:
+        return False
+
 
 # Routes
 @app.route('/')
@@ -63,45 +71,24 @@ def md5(string):
 
 @app.route('/factorial/<number>')
 def fact(number):
-    try:
-        num = int(number)
-        if num < 0:
-            output = 'Error: integer needs to be positive'
-            return response(number, output, 400)
-        else:
-            output = factorial(num)
-            return response(number, output, 200)
-    except ValueError:
-        output = "Error: that's not a number"
-        return response(number, output, 400)
+    if valid_number(number):
+        return response(number, factorial(int(number)), 200)
+    else:
+        return response(number, 'Error: not a valid number', 400)
 
 @app.route('/fibonacci/<number>')
 def fib(number):
-    try:
-        num = int(number)
-        if num < 0:
-            output = 'Error: integer needs to be positive'
-            return response(number, output, 400)
-        else:
-            output = fibonacci(num)
-            return response(number, output, 200)
-    except ValueError:
-        output = "Error: that's not a number"
-        return response(number, output, 400)
+    if valid_number(number):
+        return response(number, fibonacci(int(number)), 200)
+    else:
+        return response(number, 'Error: not a valid number', 400)
 
 @app.route('/is-prime/<number>')
 def prime(number):
-    try:
-        num = int(number)
-        if num < 0:
-            output = 'Error: integer needs to be positive'
-            return response(number, output, 400)
-        else:
-            output = is_prime(num)
-            return response(number, output, 200)
-    except ValueError:
-        output = "Error: that's not a number"
-        return response(number, output, 400)
+    if valid_number(number):
+        return response(number, is_prime(int(number)), 200)
+    else:
+        return response(number, 'Error: not a valid number', 400)
 
 @app.route('/slack-alert/<string>')
 def slack_alert(string):
