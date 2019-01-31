@@ -8,6 +8,9 @@ except ImportError:
     from server import app
 
 def get(uri):
+    """
+    Sets up a client and makes a simple get request. Returns a dictionary from the json data returned
+    """
     app.config['TESTING'] = True
     client = app.test_client()
     response = client.get(uri)
