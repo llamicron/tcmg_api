@@ -1,10 +1,13 @@
 import hashlib
 import json
 import requests
+import redis
 
 from flask import Flask, Response
 
 app = Flask(__name__)
+
+app.redis = redis.Redis(host="redis", port=6379)
 
 # Helper functions
 def factorial(num):
