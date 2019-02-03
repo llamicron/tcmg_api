@@ -53,8 +53,9 @@ def response(input, output, code):
 
 def valid_number(string):
     try:
-        int(string)
-        return True
+        num = int(string)
+        if num > 0:
+            return True
     except ValueError:
         return False
 
